@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Make sure background and text color are set for dark mode */
+html,
+body {
+    @apply bg-gray-900 text-gray-100;
+    min-height: 100vh;
+}
