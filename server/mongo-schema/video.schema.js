@@ -9,7 +9,7 @@ const videoSchema = new mongoose.Schema({
     views: { type: Number, default: 0 },
     likes: { type: Number, default: 0 },
     dislikes: { type: Number, default: 0 },
-    descriprion: { type: String },
+    description: { type: String },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
     createdBy: { type: String }
 }, { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });

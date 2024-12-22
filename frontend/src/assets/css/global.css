@@ -259,3 +259,216 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px #212529 inset !important;
     -webkit-text-fill-color: #fff !important;
 }
+
+
+/* video player css */
+.video-player-container {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #0f0f0f, #1a1a1a);
+    padding: 2rem 1rem;
+}
+
+.video-content {
+    max-width: 1800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 2rem;
+}
+
+@media (max-width: 1200px) {
+    .video-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.main-content {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.player-wrapper {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+}
+
+/* Video Info Styles */
+.video-info {
+    margin-bottom: 1.5rem;
+}
+
+.video-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.video-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.creator-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.creator-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.creator-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.creator-details h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.video-stats {
+    font-size: 0.875rem;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    font-size: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Video Controls Styles */
+.video-controls {
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 1rem 0;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.control-btn.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+.control-btn.active.dislike {
+    background: #dc2626;
+}
+
+.share-btn {
+    margin-left: auto;
+}
+
+/* Quality Selector Styles */
+.quality-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.quality-label {
+    color: #999;
+    font-size: 0.875rem;
+}
+
+.quality-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.quality-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.quality-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.quality-btn.active {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* VideoJS Custom Theme */
+.vjs-custom-theme {
+    --vjs-theme-primary: #2563eb;
+}
+
+.vjs-custom-theme .vjs-big-play-button {
+    background: rgba(37, 99, 235, 0.8) !important;
+    border-color: #2563eb !important;
+    border-radius: 50% !important;
+    width: 80px !important;
+    height: 80px !important;
+    line-height: 80px !important;
+    margin-left: -40px !important;
+    margin-top: -40px !important;
+}
+
+.vjs-custom-theme .vjs-control-bar {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent) !important;
+}
+
+.vjs-custom-theme .vjs-slider {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.vjs-custom-theme .vjs-play-progress {
+    background: #2563eb !important;
+}
+
+.vjs-custom-theme .vjs-volume-level {
+    background: #2563eb !important;
+}

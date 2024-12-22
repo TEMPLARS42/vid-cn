@@ -1,17 +1,27 @@
 import React, { useRef, useEffect, useState } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
-import { ThumbsUp, ThumbsDown, MessageCircle, Share2, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Share2, User, MessageCircle } from 'lucide-react';
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import Loader from "../Loader";
 import VideoComments from './VideoComments';
 import VideoDescription from './VideoDescription';
-import { useNavigate, useParams } from 'react-router-dom';
-import Loader from '../Loader';
-import axios from 'axios';
-import { getRelativeTime } from "../../util";
+
+// Utility function to format numbers
+const formatNumber = (num) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num;
+};
 
 export const VideoPlayer = () => {
     const videoRef = useRef(null);
     const playerRef = useRef(null);
+    const { videoId } = useParams();
+
+    const [videoInfo, setVideoInfo] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedQuality, setSelectedQuality] = useState("720p");
     const [showComments, setShowComments] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
@@ -19,23 +29,41 @@ export const VideoPlayer = () => {
     const [localLikes, setLocalLikes] = useState(0);
     const [localDislikes, setLocalDislikes] = useState(0);
 
-    const [videoInfo, setVideoInfo] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-
-    const { videoId } = useParams();
-
     const qualitySources = {
-        "360p": `${videoInfo.path}_360p.m3u8`,
-        "720p": `${videoInfo.path}_720p.m3u8`,
-        "1080p": `${videoInfo.path}_1080p.m3u8`,
+        "360p": `${videoInfo.path}_360p_360p.m3u8`,
+        "720p": `${videoInfo.path}_720p_720p.m3u8`,
+        "1080p": `${videoInfo.path}_1080p_1080p.m3u8`,
     };
 
+    // Set initial video quality based on network
+    useEffect(() => {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            const { effectiveType } = connection;
+            switch (effectiveType) {
+                case 'slow-2g':
+                case '2g':
+                    setSelectedQuality("360p");
+                    break;
+                case '3g':
+                    setSelectedQuality("720p");
+                    break;
+                case '4g':
+                case '5g':
+                default:
+                    setSelectedQuality("1080p");
+                    break;
+            }
+        }
+    }, []);
+
+    // Initialize video player
     useEffect(() => {
         if (!videoInfo.path) return;
 
         if (!playerRef.current) {
             const videoElement = document.createElement("video-js");
-            videoElement.classList.add("vjs-big-play-centered", "vjs-dark-theme");
+            videoElement.classList.add("vjs-big-play-centered", "vjs-custom-theme");
             videoRef.current.appendChild(videoElement);
 
             playerRef.current = videojs(videoElement, {
@@ -54,9 +82,9 @@ export const VideoPlayer = () => {
         }
     }, [selectedQuality, videoInfo]);
 
+    // Fetch video info and cleanup
     useEffect(() => {
         fetchVideoInfo();
-
         return () => {
             if (playerRef.current && !playerRef.current.isDisposed()) {
                 playerRef.current.dispose();
@@ -68,131 +96,127 @@ export const VideoPlayer = () => {
     const fetchVideoInfo = async () => {
         try {
             const response = await axios.get("/api/video/" + videoId);
-            setVideoInfo({ ...response.data.videoInfo, path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/kdkd2389/stream" });
-            setIsLiked(response.data.videoInfo.isLiked);
-            setIsDisliked(response.data.videoInfo.isDisliked);
-            setLocalLikes(response.data.videoInfo.likes);
-            setLocalDislikes(response.data.videoInfo.dislikes);
-        }
-        catch (error) {
+            const info = response.data.videoInfo;
+            setVideoInfo({
+                ...info,
+                path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/kdkd2389/stream"
+            });
+            setIsLiked(info.isLiked);
+            setIsDisliked(info.isDisliked);
+            setLocalLikes(info.likes || 0);
+            setLocalDislikes(info.dislikes || 0);
+        } catch (error) {
             console.error(error);
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
-    }
-
-    const handleQualityChange = (quality) => {
-        setSelectedQuality(quality);
     };
 
     const handleLike = async () => {
-        // api calling............
-        await axios.post("/api/like", { videoId, action: !isLiked });
-
-        if (!isLiked) {
-            setLocalLikes(prev => prev + 1);
-            if (isDisliked) {
-                // setLocalDislikes(prev => prev - 1);
-                setIsDisliked(false);
-                handleDislike();
+        try {
+            await axios.post("/api/like", { videoId, action: !isLiked });
+            if (!isLiked) {
+                setLocalLikes(prev => prev + 1);
+                if (isDisliked) {
+                    setIsDisliked(false);
+                    setLocalDislikes(prev => prev - 1);
+                }
+            } else {
+                setLocalLikes(prev => prev - 1);
             }
-        } else {
-            setLocalLikes(prev => prev - 1);
+            setIsLiked(!isLiked);
+        } catch (error) {
+            console.error('Failed to update like:', error);
         }
-        setIsLiked(!isLiked);
     };
 
     const handleDislike = async () => {
-        // api calling............
-        await axios.post("/api/dislike", { videoId, action: !isDisliked });
-
-        if (!isDisliked) {
-            setLocalDislikes(prev => prev + 1);
-            if (isLiked) {
-                // setLocalLikes(prev => prev - 1);
-                setIsLiked(false);
-                handleLike();
+        try {
+            await axios.post("/api/dislike", { videoId, action: !isDisliked });
+            if (!isDisliked) {
+                setLocalDislikes(prev => prev + 1);
+                if (isLiked) {
+                    setIsLiked(false);
+                    setLocalLikes(prev => prev - 1);
+                }
+            } else {
+                setLocalDislikes(prev => prev - 1);
             }
-        } else {
-            setLocalDislikes(prev => prev - 1);
+            setIsDisliked(!isDisliked);
+        } catch (error) {
+            console.error('Failed to update dislike:', error);
         }
-        setIsDisliked(!isDisliked);
-    };
-
-    const formatNumber = (num) => {
-        if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-        if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-        return num;
     };
 
     return (
         <Loader isLoading={isLoading}>
-            <div className="container-fluid bg-dark text-light py-4">
-                <div className="row">
-                    <div className="col-lg-8">
+            <div className="video-player-container">
+                <div className="video-content">
+                    <div className="main-content">
                         {/* Video Player */}
-                        <div data-vjs-player className="mb-3">
+                        <div className="player-wrapper" data-vjs-player>
                             <div ref={videoRef} />
                         </div>
 
                         {/* Video Info */}
-                        <div className="mb-4">
-                            <h1 className="h3 mb-2">{videoInfo.title}</h1>
-                            <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                <div className="d-flex align-items-center gap-2">
-                                    <div
-                                        className="rounded-circle bg-secondary d-flex align-items-center justify-content-center overflow-hidden mr-5"
-                                        style={{ width: '40px', height: '40px' }}
-                                    >
+                        <div className="video-info">
+                            <h1 className="video-title">{videoInfo.title}</h1>
+                            <div className="video-meta">
+                                <div className="creator-info">
+                                    <div className="creator-avatar">
                                         {videoInfo.profilePicture ? (
-                                            <img
-                                                src={videoInfo.profilePicture}
-                                                className="w-100 h-100"
-                                                style={{ objectFit: 'cover' }}
-                                            />
+                                            <img src={videoInfo.profilePicture} alt={videoInfo.createdBy} />
                                         ) : (
-                                            <User size={20} className="text-light" />
+                                            <User />
                                         )}
                                     </div>
-                                    <div className="">
-                                        <h6 className="mb-0">{videoInfo.createdBy}</h6>
-                                        <small className="text-secondary">{videoInfo.views || 0} views • {getRelativeTime(videoInfo.createdOn)}</small>
+                                    <div className="creator-details">
+                                        <h2>{videoInfo.createdBy}</h2>
+                                        <div className="video-stats">
+                                            <span>{videoInfo.views || 0} views</span>
+                                            <span className="dot">•</span>
+                                            <span>{videoInfo.createdOn}</span>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div className="d-flex gap-3 mt-2 mt-sm-0">
-                                    {/* Like/Dislike Buttons */}
-                                    <button
-                                        className={`btn btn-dark d-flex align-items-center gap-2 ${isLiked ? 'text-primary' : ''}`}
-                                        onClick={handleLike}
-                                    >
-                                        <ThumbsUp size={20} />
-                                        <span>{formatNumber(localLikes || 0)}</span>
-                                    </button>
-                                    <button
-                                        className={`btn btn-dark d-flex align-items-center gap-2 ${isDisliked ? 'text-danger' : ''}`}
-                                        onClick={handleDislike}
-                                    >
-                                        <ThumbsDown size={20} />
-                                        <span>{formatNumber(localDislikes || 0)}</span>
-                                    </button>
-                                    <button className="btn btn-dark d-flex align-items-center gap-2">
-                                        <Share2 size={20} />
-                                        <span>Share</span>
-                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quality Selection */}
-                        <div className="mb-4">
-                            <div className="btn-group">
+                        {/* Video Controls */}
+                        <div className="video-controls">
+                            <div className="control-buttons">
+                                <button
+                                    className={`control-btn ${isLiked ? 'active' : ''}`}
+                                    onClick={handleLike}
+                                >
+                                    <ThumbsUp />
+                                    <span>{formatNumber(localLikes)}</span>
+                                </button>
+
+                                <button
+                                    className={`control-btn ${isDisliked ? 'active dislike' : ''}`}
+                                    onClick={handleDislike}
+                                >
+                                    <ThumbsDown />
+                                    <span>{formatNumber(localDislikes)}</span>
+                                </button>
+
+                                <button className="control-btn share-btn">
+                                    <Share2 />
+                                    <span>Share</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Quality Selector */}
+                        <div className="quality-selector">
+                            <span className="quality-label">Quality:</span>
+                            <div className="quality-buttons">
                                 {Object.keys(qualitySources).map(quality => (
                                     <button
                                         key={quality}
-                                        className={`btn ${selectedQuality === quality ? 'btn-primary' : 'btn-dark'}`}
-                                        onClick={() => handleQualityChange(quality)}
+                                        className={`quality-btn ${selectedQuality === quality ? 'active' : ''}`}
+                                        onClick={() => setSelectedQuality(quality)}
                                     >
                                         {quality}
                                     </button>
@@ -212,13 +236,12 @@ export const VideoPlayer = () => {
                                 <MessageCircle size={20} />
                                 <span>Comments</span>
                             </button>
-                            {true && <VideoComments />}
+                            {showComments && <VideoComments videoId={videoId} />}
                         </div>
                     </div>
 
-                    {/* Suggested Videos Column */}
-                    <div className="col-lg-4">
-                        {/* Add suggested videos component here */}
+                    <div className="sidebar-content">
+                        {/* Suggested videos will go here */}
                     </div>
                 </div>
             </div>
