@@ -7,6 +7,9 @@ import { useParams } from "react-router-dom";
 import Loader from "../Loader";
 import VideoComments from './VideoComments';
 import VideoDescription from './VideoDescription';
+// import "videojs-hls-quality-selector";
+import 'jb-videojs-hls-quality-selector';
+import "videojs-contrib-quality-levels"
 
 // Utility function to format numbers
 const formatNumber = (num) => {
@@ -21,7 +24,7 @@ export const VideoPlayer = () => {
     const { videoId } = useParams();
 
     const [videoInfo, setVideoInfo] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [selectedQuality, setSelectedQuality] = useState("720p");
     const [showComments, setShowComments] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
@@ -29,33 +32,32 @@ export const VideoPlayer = () => {
     const [localLikes, setLocalLikes] = useState(0);
     const [localDislikes, setLocalDislikes] = useState(0);
 
-    const qualitySources = {
-        "360p": `${videoInfo.path}_360p_360p.m3u8`,
-        "720p": `${videoInfo.path}_720p_720p.m3u8`,
-        "1080p": `${videoInfo.path}_1080p_1080p.m3u8`,
+    const qualitySourcesMap = {
+        "360p": 0,
+        "720p": 1,
+        "1080p": 2,
     };
 
     // Set initial video quality based on network
-    useEffect(() => {
+    const getOptimalQuality = () => {
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         if (connection) {
             const { effectiveType } = connection;
             switch (effectiveType) {
                 case 'slow-2g':
                 case '2g':
-                    setSelectedQuality("360p");
-                    break;
+                    return "360p";
                 case '3g':
-                    setSelectedQuality("720p");
-                    break;
+                    return "720p";
                 case '4g':
                 case '5g':
                 default:
-                    setSelectedQuality("1080p");
-                    break;
+                    return "1080p";
             }
         }
-    }, []);
+        // Return a default quality if no network information is available
+        return "360p";
+    };
 
     // Initialize video player
     useEffect(() => {
@@ -73,24 +75,46 @@ export const VideoPlayer = () => {
                 fluid: true,
                 responsive: true,
                 playbackRates: [0.5, 1, 1.5, 2],
-                sources: [{ src: qualitySources[selectedQuality], type: "application/x-mpegURL" }],
+                sources: [{ src: videoInfo.path, type: "application/x-mpegURL" }],
+                html5: {
+                    nativeAudioTracks: true,
+                    nativeVideoTracks: true,
+                    nativeTextTracks: true,
+                    hls: {
+                        overrideNative: true,
+                    },
+                },
+            });
+
+            playerRef.current.hlsQualitySelector();
+
+            const qualityLevels = playerRef.current.qualityLevels();
+            qualityLevels.selectedIndex_ = qualitySourcesMap[getOptimalQuality()]
+            qualityLevels.trigger({ type: 'change', selectedIndex: qualitySourcesMap[getOptimalQuality()] });
+            // Access quality levels and listen for changes
+
+            qualityLevels.on("change", () => {
+                const selectedLevelIndex = qualityLevels.selectedIndex_; // Selected quality level
+                const selectedQualityLevel = qualityLevels[selectedLevelIndex];
+                console.log("Quality changed to:", selectedQualityLevel, selectedLevelIndex, getOptimalQuality());
             });
         } else {
             const player = playerRef.current;
-            player.src([{ src: qualitySources[selectedQuality], type: "application/x-mpegURL" }]);
+            player.src([{ src: videoInfo.path, type: "application/x-mpegURL" }]);
             player.load();
         }
-    }, [selectedQuality, videoInfo]);
 
-    // Fetch video info and cleanup
-    useEffect(() => {
-        fetchVideoInfo();
         return () => {
             if (playerRef.current && !playerRef.current.isDisposed()) {
                 playerRef.current.dispose();
                 playerRef.current = null;
             }
         };
+    }, [videoInfo?.path]);
+
+    // Fetch video info and cleanup
+    useEffect(() => {
+        fetchVideoInfo();
     }, []);
 
     const fetchVideoInfo = async () => {
@@ -99,7 +123,7 @@ export const VideoPlayer = () => {
             const info = response.data.videoInfo;
             setVideoInfo({
                 ...info,
-                path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/kdkd2389/stream"
+                path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/kdkd2389/master.m3u8"
             });
             setIsLiked(info.isLiked);
             setIsDisliked(info.isDisliked);
@@ -209,7 +233,7 @@ export const VideoPlayer = () => {
                         </div>
 
                         {/* Quality Selector */}
-                        <div className="quality-selector">
+                        {/* <div className="quality-selector">
                             <span className="quality-label">Quality:</span>
                             <div className="quality-buttons">
                                 {Object.keys(qualitySources).map(quality => (
@@ -222,7 +246,7 @@ export const VideoPlayer = () => {
                                     </button>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Description */}
                         <VideoDescription description={videoInfo.description || ""} />
