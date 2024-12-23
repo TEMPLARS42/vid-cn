@@ -28,6 +28,7 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       target: 'esnext',
+      watch: false,
       minify: 'terser',
       terserOptions: {
         compress: {
