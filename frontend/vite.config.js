@@ -26,5 +26,27 @@ export default defineConfig(({ command, mode }) => {
       'process.env.CONFIG_FIREBASE_APP_ID': JSON.stringify(env.CONFIG_FIREBASE_APP_ID),
       'process.env.CONFIG_FIREBASE_VAPID_KEY': JSON.stringify(env.CONFIG_FIREBASE_VAPID_KEY),
     },
+    build: {
+      target: 'esnext',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_debugger: true,
+          drop_console: true,
+          passes: 2
+        },
+        mangle: true,
+        output: {
+          comments: false,
+        },
+      },
+      rollupOptions: {
+        output: {
+          entryFileNames: `assets/[hash:22]-${Date.now()}.js`,
+          chunkFileNames: `assets/[hash:22].js`,
+          assetFileNames: `assets/[hash:22].[ext]`,
+        }
+      }
+    }
   }
 })
