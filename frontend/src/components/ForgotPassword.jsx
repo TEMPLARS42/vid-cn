@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form';
 import { AtSign, Send, ArrowLeft } from 'lucide-react';
 import { toasty } from '../configs/toasty.config';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
+    const navigate = useNavigate();
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -28,11 +30,6 @@ const ForgotPassword = () => {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleBack = () => {
-        // Add your navigation logic here
-        console.log('Navigate back to login');
     };
 
     if (isSubmitted) {
@@ -79,7 +76,7 @@ const ForgotPassword = () => {
                             <div className="card-body p-5">
                                 <button
                                     className="btn btn-dark btn-sm mb-4 d-flex align-items-center gap-2"
-                                    onClick={handleBack}
+                                    onClick={() => navigate("/login")}
                                 >
                                     <ArrowLeft size={16} />
                                     Back to Login

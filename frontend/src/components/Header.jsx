@@ -1,5 +1,5 @@
 import React from 'react';
-import { Upload, Video } from 'lucide-react';
+import { Upload, Video, LogOut } from 'lucide-react';
 import { Outlet } from 'react-router-dom'
 import { isUserExists } from '../util';
 import { useNavigate } from 'react-router-dom';
@@ -39,10 +39,11 @@ const Header = () => {
             {isUserExists() && <header className="bg-black border-bottom border-secondary sticky-top">
                 <div className="container-fluid py-3">
                     <div className="d-flex justify-content-between align-items-center">
-                        <div className="col-auto d-flex align-items-center">
+                        <div className="col-auto d-flex align-items-center" onClick={() => navigate('/videos')} style={{ cursor: 'pointer' }}>
                             <Video size={24} className="text-primary me-2" />
                             <h1 className="text-light mb-0 h4 d-none d-sm-block">Vid-CN</h1>
                         </div>
+
                         {/* <div className="col-lg-6 d-flex gap-2"> */}
                         <div className="col-auto d-flex align-items-end gap-3">
                             <Notifications />
@@ -57,7 +58,7 @@ const Header = () => {
                                 onClick={handleLogout}
                                 className="btn btn-primary d-flex align-items-center gap-2"
                             >
-                                <Upload size={20} />
+                                <LogOut size={20} />
                                 <span className="d-none d-sm-inline">Log Out</span>
                             </button>
                         </div>

@@ -32,7 +32,7 @@ const handleUpload = async (req, res) => {
         const videoInfo = await VideoModal.create(
             {
                 title: data.title,
-                descriprion: data.description,
+                description: data.description,
                 path: s3Path,
                 uploadStatus: 'PROCESSING',
                 thumbnail: thumbnailUrl,

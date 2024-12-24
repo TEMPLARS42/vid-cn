@@ -113,6 +113,12 @@ export default function SignUp() {
                                         Create Account
                                     </button>
                                 </form>
+                                <div className="text-center mt-4">
+                                    <span className="text-secondary">Already have an account? </span>
+                                    <span onClick={() => navigate("/login")} className="text-primary text-decoration-none cursor-auto">
+                                        Log in
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

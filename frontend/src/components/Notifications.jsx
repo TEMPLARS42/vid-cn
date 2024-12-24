@@ -127,7 +127,7 @@ const Notifications = () => {
                     }}>
                     {/* Header */}
                     <div className="d-flex justify-content-between align-items-center p-3 border-bottom border-secondary">
-                        <h6 className="mb-0 fw-semibold">Notifications</h6>
+                        <h6 className="mb-0 fw-semibold text-light">Notifications</h6>
                         {unreadNotificationCount > 0 && (
                             <button
                                 className="btn btn-dark btn-sm d-flex align-items-center gap-1"

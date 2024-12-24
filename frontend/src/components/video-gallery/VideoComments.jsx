@@ -147,7 +147,7 @@ const VideoComments = () => {
                                 <h6 className="mb-0">{comment.author}</h6>
                                 <small className="text-secondary">{getRelativeTime(comment.createdOn)}</small>
                             </div>
-                            <p className="mb-1 mt-1">{comment.text}</p>
+                            <p className="mb-1 mt-1 text-light">{comment.text}</p>
                             <div className="d-flex align-items-center gap-3">
                                 <button className="btn btn-dark btn-sm" type='button' onClick={() => handleCommentLiked(comment._id, !comment.isLiked)}>
                                     👍 {comment.likes}

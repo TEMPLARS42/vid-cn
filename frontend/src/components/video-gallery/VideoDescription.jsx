@@ -8,7 +8,7 @@ const VideoDescription = ({ description }) => {
 
     return (
         <div className="video-description bg-dark border border-secondary rounded p-3">
-            <p className="mb-2">
+            <p className="mb-2 text-white">
                 {expanded ? description : shortDescription}
                 {!expanded && hasMore && '...'}
             </p>

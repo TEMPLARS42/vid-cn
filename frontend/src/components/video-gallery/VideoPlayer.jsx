@@ -10,6 +10,7 @@ import VideoDescription from './VideoDescription';
 // import "videojs-hls-quality-selector";
 import 'jb-videojs-hls-quality-selector';
 import "videojs-contrib-quality-levels"
+import { getRelativeTime } from "../../util";
 
 // Utility function to format numbers
 const formatNumber = (num) => {
@@ -93,11 +94,11 @@ export const VideoPlayer = () => {
             qualityLevels.trigger({ type: 'change', selectedIndex: qualitySourcesMap[getOptimalQuality()] });
             // Access quality levels and listen for changes
 
-            qualityLevels.on("change", () => {
-                const selectedLevelIndex = qualityLevels.selectedIndex_; // Selected quality level
-                const selectedQualityLevel = qualityLevels[selectedLevelIndex];
-                console.log("Quality changed to:", selectedQualityLevel, selectedLevelIndex, getOptimalQuality());
-            });
+            // qualityLevels.on("change", () => {
+            //     const selectedLevelIndex = qualityLevels.selectedIndex_; // Selected quality level
+            //     const selectedQualityLevel = qualityLevels[selectedLevelIndex];
+            //     console.log("Quality changed to:", selectedQualityLevel, selectedLevelIndex, getOptimalQuality());
+            // });
         } else {
             const player = playerRef.current;
             player.src([{ src: videoInfo.path, type: "application/x-mpegURL" }]);
@@ -199,7 +200,7 @@ export const VideoPlayer = () => {
                                         <div className="video-stats">
                                             <span>{videoInfo.views || 0} views</span>
                                             <span className="dot">•</span>
-                                            <span>{videoInfo.createdOn}</span>
+                                            <span>{getRelativeTime(videoInfo.createdOn)}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -260,7 +261,7 @@ export const VideoPlayer = () => {
                                 <MessageCircle size={20} />
                                 <span>Comments</span>
                             </button>
-                            {showComments && <VideoComments videoId={videoId} />}
+                            {true && <VideoComments videoId={videoId} />}
                         </div>
                     </div>
 
