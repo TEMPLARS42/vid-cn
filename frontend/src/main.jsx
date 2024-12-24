@@ -13,10 +13,10 @@ createRoot(document.getElementById('root')).render(
     <Provider store={store}>
       <AuthenticateHandler>
         <Auth0Provider
-          domain="dev-8qz3qdgxm6bu5ywm.us.auth0.com"
-          clientId="BsRDzio0JtR6BmfYutkIJcTLdUcUwRNV"
+          domain={process.env.CONFIG_AUTH0_DOMAIN}
+          clientId={process.env.CONFIG_AUTH0_CLIENT_ID}
           authorizationParams={{
-            redirect_uri: "http://localhost:3000/oauth-callback",
+            redirect_uri: process.env.CONFIG_AUTH0_CALLBACKURL,
           }}
         >
           <App />
