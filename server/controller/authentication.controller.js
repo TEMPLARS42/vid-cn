@@ -17,7 +17,7 @@ const handleSignUp = async (req, res) => {
         if (isUserExists) return res.status(401).send({ message: 'User already exists.' });
 
         const encryptedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
-        const user = await UserModal.create({ name, email, password: encryptedPassword });
+        const user = await UserModal.create({ name, email, password: encryptedPassword, type: 'local' });
 
         return res.status(200).send({ message: "Signed up successfull" })
     }
