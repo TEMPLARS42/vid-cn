@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')).render(
       <AuthenticateHandler>
         <Auth0Provider
           domain={process.env.CONFIG_AUTH0_DOMAIN}
-          clientId={process.env.CONFIG_AUTH0_CLIENT_ID}
+          clientId={process.env.CONFIG_AUTH0_CLIENTID}
           authorizationParams={{
             redirect_uri: process.env.CONFIG_AUTH0_CALLBACKURL,
           }}
