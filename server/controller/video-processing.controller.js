@@ -13,14 +13,16 @@ const { messaging } = require('../confgis/firebase-admin.config');
 const LikeModal = require("../mongo-schema/like.schema");
 const DislikeModal = require("../mongo-schema/dislike.schema");
 const path = require('path');
+const { generatePublicS3Url } = require('../service/s3Helper.service');
 
 const handleUpload = async (req, res) => {
     try {
         const { userId, user, body } = req;
         const data = JSON.parse(body.data);
+        const uniqueVideoName = generateRandomString(16);
         const actualPath = `/uploads/videos/${userId}`;
-        const outputPath = `.${actualPath}`;
-        const s3Path = `uploads/videos/${userId}`;
+        const outputPath = `.${actualPath}/${uniqueVideoName}`;
+        const s3Path = `uploads/videos/${userId}/${uniqueVideoName}`;
 
         // thumbnail creation.................
         const thumbnailLocalPath = `${outputPath}/${generateRandomString(32)}-thumbnail.jpg`;
@@ -84,7 +86,7 @@ const fetchVideos = async (req, res) => {
                     ]
                 }
             },
-            // { $sort: { createdOn: -1 } },
+            { $sort: { createdOn: -1, _id: 1 } },
             { $skip: parseInt(skip) },
             { $limit: parseInt(limit) },
             {
@@ -107,6 +109,7 @@ const fetchVideos = async (req, res) => {
                     thumbnail: 1,
                     views: 1,
                     createdBy: 1,
+                    uploadStatus: 1,
                     profilePicture: "$createdByInfo.profilePicture",
                 }
             }
@@ -129,7 +132,15 @@ const fetchVideoById = async (req, res) => {
         const isLiked = await LikeModal.exists({ videoId, userId: req.user._id });
         const isDisliked = await DislikeModal.exists({ videoId, userId: req.user._id, });
 
-        res.status(200).send({ videoInfo: { ...videoInfo.toObject(), isLiked: !!isLiked, isDisliked: !!isDisliked, profilePicture: videoCreatorInfo.profilePicture } });
+        res.status(200).send({
+            videoInfo: {
+                ...videoInfo.toObject(),
+                isLiked: !!isLiked,
+                isDisliked: !!isDisliked,
+                profilePicture: videoCreatorInfo.profilePicture,
+                path: generatePublicS3Url(videoInfo.path)
+            }
+        });
     }
     catch (error) {
         console.log(error);
@@ -212,7 +223,6 @@ const sendNotification = async (token, notification) => {
                 body: "the body",
             },
         };
-
         const response = await messaging.send(message);
         console.log('Notification sent successfully:', response);
     } catch (error) {

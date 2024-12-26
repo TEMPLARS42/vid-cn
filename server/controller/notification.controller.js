@@ -13,7 +13,7 @@ const fetchNotifications = async (req, res) => {
                     userId: new ObjectId(userId)
                 }
             },
-            { $sort: { createdAt: -1 } },
+            { $sort: { createdOn: -1 } },
             { $skip: parseInt(skip) },
             { $limit: parseInt(limit) },
         ])

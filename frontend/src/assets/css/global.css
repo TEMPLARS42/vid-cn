@@ -472,3 +472,124 @@ input:-webkit-autofill:active {
 .vjs-custom-theme .vjs-volume-level {
     background: #2563eb !important;
 }
+
+
+/* updated video card css */
+.blur {
+    filter: blur(4px);
+    transition: filter 0.3s ease;
+}
+
+.processing-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.processing-content {
+    text-align: center;
+    color: white;
+}
+
+.processing-icon {
+    animation: spin 2s linear infinite;
+    margin-bottom: 0.5rem;
+}
+
+.processing-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.processing {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* notifications css */
+.notifications-popup {
+    position: absolute;
+    end: 0;
+    margin-top: 0.5rem;
+    width: 320px;
+    max-height: 480px;
+    background: var(--bs-dark);
+    border: 1px solid var(--bs-secondary);
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+    z-index: 1050;
+    right: -10px;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--bs-secondary);
+}
+
+.notifications-container {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-secondary) var(--bs-dark);
+}
+
+.notifications-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notifications-container::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+.notifications-container::-webkit-scrollbar-thumb {
+    background-color: var(--bs-secondary);
+    border-radius: 3px;
+}
+
+.notifications-scroll {
+    overflow: hidden !important;
+}
+
+.notification-item {
+    transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.notification-loader {
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-item button {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.notification-item:hover button {
+    opacity: 1;
+}

@@ -4,14 +4,14 @@ import { Outlet } from 'react-router-dom'
 import { isUserExists } from '../util';
 import { useNavigate } from 'react-router-dom';
 import Notifications from './Notifications';
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useAuth0 } from "@auth0/auth0-react";
 import { useSelector } from "react-redux";
 import axios from 'axios';
 import { toasty } from '../configs/toasty.config';
 
 const Header = () => {
     const navigate = useNavigate();
-    const { logout } = useAuth0();
+    // const { logout } = useAuth0();
 
     const userInfo = useSelector((state) => state.user.userInfo);
 
@@ -27,7 +27,7 @@ const Header = () => {
             localStorage.clear();
             window.location.href = "/login"
 
-            if (userInfo.type == "oauth") logout({ returnTo: process.env.CONFIG_BASE_URL });
+            // if (userInfo.type == "oauth") logout({ returnTo: process.env.CONFIG_BASE_URL });
         }
         catch (error) {
             console.error(error);

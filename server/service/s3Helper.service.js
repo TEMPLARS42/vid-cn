@@ -54,7 +54,10 @@ const uploadFolderToS3 = async (folderPath, s3Folder = '') => {
     }
 };
 
+const generatePublicS3Url = (path) => `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com/${path}/master.m3u8`;
+
 module.exports = {
     uploadFolderToS3,
-    uploadFile
+    uploadFile,
+    generatePublicS3Url
 }

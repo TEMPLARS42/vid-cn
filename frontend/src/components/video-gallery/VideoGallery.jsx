@@ -6,6 +6,7 @@ import VideoPlayer from './VideoPlayer';
 import { useNavigate, useParams } from 'react-router-dom';
 import SearchBar from '../SearchBar';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { initializeFirebaseConnection } from '../../configs/firebase.config';
 
 const VideoGallery = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +20,10 @@ const VideoGallery = () => {
     const { videoId } = useParams();
     const navigate = useNavigate();
     const timeoutId = useRef(null);
+
+    useEffect(() => {
+        initializeFirebaseConnection()
+    }, [])
 
     useEffect(() => {
         if (videoId) {

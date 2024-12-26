@@ -25,6 +25,10 @@ export default defineConfig(({ command, mode }) => {
       'process.env.CONFIG_FIREBASE_MESSAGING_SENDER_ID': JSON.stringify(env.CONFIG_FIREBASE_MESSAGING_SENDER_ID),
       'process.env.CONFIG_FIREBASE_APP_ID': JSON.stringify(env.CONFIG_FIREBASE_APP_ID),
       'process.env.CONFIG_FIREBASE_VAPID_KEY': JSON.stringify(env.CONFIG_FIREBASE_VAPID_KEY),
+      'process.env.CONFIG_CONFIG_BASE_URL': JSON.stringify(env.CONFIG_BASE_URL),
+      'process.env.CONFIG_AUTH0_DOMAIN': JSON.stringify(env.CONFIG_AUTH0_DOMAIN),
+      'process.env.CONFIG_AUTH0_CLIENTID': JSON.stringify(env.CONFIG_AUTH0_CLIENTID),
+      'process.env.CONFIG_AUTH0_CALLBACKURL': JSON.stringify(env.CONFIG_AUTH0_CALLBACKURL),
     },
     build: {
       target: 'esnext',

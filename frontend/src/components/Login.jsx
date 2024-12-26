@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { setUserInfo } from '../store/user-slice';
 import { useNavigate } from 'react-router-dom';
 import { toasty } from '../configs/toasty.config';
-import { useAuth0 } from "@auth0/auth0-react";
+// import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Login() {
   const {
@@ -15,7 +15,7 @@ export default function Login() {
   } = useForm();
 
   const dispatch = useDispatch();
-  const { loginWithRedirect } = useAuth0();
+  // const { loginWithRedirect } = useAuth0();
   const navigate = useNavigate();
 
   const handleLogin = async (data) => {
@@ -105,13 +105,13 @@ export default function Login() {
                   >
                     Sign In
                   </button>
-                  <button
+                  {/* <button
                     type="button"
                     className="btn btn-primary w-100 py-3 mt-4 fw-semibold"
                     onClick={() => loginWithRedirect()}
                   >
                     Sign In using Oauth
-                  </button>
+                  </button> */}
 
                   <div className="text-center mt-4">
                     <span className="text-secondary">Don't have an account? </span>

@@ -7,24 +7,21 @@ const VideoModal = require("../mongo-schema/video.schema");
 const NotificationModal = require('../mongo-schema/notification.schema');
 const mongoose = require("mongoose");
 const { sendSystemMail } = require('../service/smtp.service');
+const { messaging } = require('../confgis/firebase-admin.config');
 const { ObjectId } = mongoose.Types;
 
 const videoWorker = new Worker('video-processing', async (job) => {
-  const { file, outputPath, userId, s3Path } = job.data;
+  const { file, outputPath, userId, s3Path, videoId, fileName } = job.data;
 
   try {
     await convertToAdaptiveStreaming(file, outputPath, s3Path);
-    // console.log(`Video conversion for user ${userId} is completed.`);
-
-    setTimeout(() => {
-      console.log(`Video conversion for user ${userId} is completed.`);
-    }, 5000)
+    console.log(`Video conversion for user ${userId} is completed.`);
 
     VideoModal.updateOne({ _id: new ObjectId(videoId) }, { $set: { uploadStatus: 'COMPLETED' } });
 
     // adding notification to the quene............
     await notificationQuene.add('send-notification', {
-      fileName: req.files[0].originalname,
+      fileName,
       userId
     });
   } catch (error) {
@@ -50,15 +47,15 @@ const notificationWorker = new Worker('send-notification', async (job) => {
       },
     };
 
-    await NotificationModal.create({
+    const res = await NotificationModal.create({
       subject: "Video Uploded",
-      message: `${fileName} uploaded successfully`,
+      message: `Video titled as ${fileName} uploaded successfully`,
       userId,
     })
 
     // sending push notification to the user....
     const response = await messaging.send(message);
-
+    console.log(response,"pp")
     // sending email notification to the user....
     const payload = {
       subject: 'Video Uploaded',

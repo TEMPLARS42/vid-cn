@@ -16,6 +16,7 @@ const userSlice = createSlice({
             state.userInfo = null; // Clear user info on logout or reset
         },
         updateNotificationCount: (state, action) => {
+            // console.log(action, "ppppp")
             if (state.userInfo) {
                 state.userInfo.unreadNotificationCount += action.payload;
             }

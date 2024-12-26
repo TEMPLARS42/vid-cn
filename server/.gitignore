@@ -131,3 +131,6 @@ dist
 
 # firbase key
 firebase-private-key.json
+
+# uploads folder
+uploads

@@ -17,6 +17,7 @@ const UploadVideo = ({ onVideoUpload }) => {
         register,
         handleSubmit,
         setValue,
+        reset,
         formState: { errors }
     } = useForm();
 
@@ -83,6 +84,7 @@ const UploadVideo = ({ onVideoUpload }) => {
     };
 
     const clearSelection = () => {
+        reset({});
         setSelectedFile(null);
         setPreviewUrl('');
         setProgress(0);

@@ -1,8 +1,9 @@
 import React from 'react';
-import { User, Eye, Clock } from 'lucide-react';
+import { User, Eye, Clock, Upload } from 'lucide-react';
 
 const VideoCard = ({ videoInfo, onVideoClick }) => {
-    const { title, thumbnail, profilePicture, addedBy, views, timestamp } = videoInfo;
+    const { title, thumbnail, profilePicture, addedBy, views, timestamp, uploadStatus } = videoInfo;
+    const isProcessing = uploadStatus === 'PROCESSING';
 
     // Utility function for formatting view counts
     const formatViews = (count) => {
@@ -48,15 +49,23 @@ const VideoCard = ({ videoInfo, onVideoClick }) => {
         </div>
     );
 
-    // Render video thumbnail with duration
+    // Render video thumbnail with duration and processing overlay
     const renderThumbnail = () => (
         <div className="position-relative">
             <img
                 src={thumbnail}
                 alt={title}
-                className="card-img-top"
+                className={`card-img-top ${isProcessing ? 'blur' : ''}`}
                 style={{ aspectRatio: '16/9', objectFit: 'cover' }}
             />
+            {isProcessing && (
+                <div className="processing-overlay">
+                    <div className="processing-content">
+                        <Upload className="processing-icon" size={24} />
+                        <span className="processing-text">Processing...</span>
+                    </div>
+                </div>
+            )}
             <div className="position-absolute bottom-0 end-0 m-2">
                 <span className="badge bg-dark bg-opacity-75 d-flex align-items-center gap-1">
                     <Clock size={14} />
@@ -68,16 +77,20 @@ const VideoCard = ({ videoInfo, onVideoClick }) => {
 
     return (
         <div
-            className="card bg-dark h-100 border-secondary cursor-pointer"
-            onClick={() => onVideoClick(videoInfo._id)}
+            className={`card bg-dark h-100 border-secondary ${isProcessing ? 'processing' : 'cursor-pointer'}`}
+            onClick={() => !isProcessing && onVideoClick(videoInfo._id)}
             style={{ transition: 'transform 0.2s, box-shadow 0.2s' }}
             onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.3)';
+                if (!isProcessing) {
+                    e.currentTarget.style.transform = 'translateY(-5px)';
+                    e.currentTarget.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.3)';
+                }
             }}
             onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = 'none';
+                if (!isProcessing) {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = 'none';
+                }
             }}
         >
             {renderThumbnail()}

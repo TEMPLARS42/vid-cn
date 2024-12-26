@@ -58,8 +58,9 @@ const convertToAdaptiveStreaming = async (file, outputPath, s3Path) => {
 
         // uplading files into s3 bucket
         await uploadFolderToS3(outputPath, s3Path)
-        // deleteLocalFile(outputPath);
-        // deleting local files..........
+        // deleting local folder..........
+        deleteLocalFolder(outputPath);
+        deleteLocalFile(file.path.toString());
 
         console.log('Adaptive streaming conversion complete');
     } catch (error) {
@@ -132,9 +133,17 @@ const deleteLocalFile = (filePath) => {
     }
 }
 
+const deleteLocalFolder = (folderPath) => {
+    try {
+        fs.rmSync(folderPath, { recursive: true, force: true });
+    } catch (error) {
+        console.error('Error deleting local file:', error);
+    }
+}
 
 module.exports = {
     convertToAdaptiveStreaming,
     captureThumbnail,
-    deleteLocalFile
+    deleteLocalFile,
+    deleteLocalFolder
 }

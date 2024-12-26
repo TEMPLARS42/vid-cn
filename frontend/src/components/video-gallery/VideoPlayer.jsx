@@ -26,7 +26,6 @@ export const VideoPlayer = () => {
 
     const [videoInfo, setVideoInfo] = useState({});
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedQuality, setSelectedQuality] = useState("720p");
     const [showComments, setShowComments] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
     const [isDisliked, setIsDisliked] = useState(false);
@@ -124,7 +123,7 @@ export const VideoPlayer = () => {
             const info = response.data.videoInfo;
             setVideoInfo({
                 ...info,
-                path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/kdkd2389/master.m3u8"
+                // path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/videos/6744cdb27abf86d90d83acb3/62d4f137ddc5e8e6d22a222749dbb0fh/master.m3u8"
             });
             setIsLiked(info.isLiked);
             setIsDisliked(info.isDisliked);
@@ -232,23 +231,6 @@ export const VideoPlayer = () => {
                                 </button>
                             </div>
                         </div>
-
-                        {/* Quality Selector */}
-                        {/* <div className="quality-selector">
-                            <span className="quality-label">Quality:</span>
-                            <div className="quality-buttons">
-                                {Object.keys(qualitySources).map(quality => (
-                                    <button
-                                        key={quality}
-                                        className={`quality-btn ${selectedQuality === quality ? 'active' : ''}`}
-                                        onClick={() => setSelectedQuality(quality)}
-                                    >
-                                        {quality}
-                                    </button>
-                                ))}
-                            </div>
-                        </div> */}
-
                         {/* Description */}
                         <VideoDescription description={videoInfo.description || ""} />
 
