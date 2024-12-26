@@ -137,3 +137,6 @@ uploads
 
 # pm2 config file
 ecosystem.config.js
+
+# package-lock.json
+package-lock.json

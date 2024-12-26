@@ -48,3 +48,6 @@ Thumbs.db
 
 # Optional REACT app specific files
 /.firebase
+
+# package-lock.json
+package-lock.json
