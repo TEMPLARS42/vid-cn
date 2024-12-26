@@ -134,3 +134,6 @@ firebase-private-key.json
 
 # uploads folder
 uploads
+
+# pm2 config file
+ecosystem.config.js
