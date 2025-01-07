@@ -29,6 +29,8 @@ router.get('/comments', authenticate, videoProcessingController.fetchComments);
 router.post('/comment', authenticate, videoProcessingController.handleVideoCommented); 
 router.patch('/comment-like', authenticate, videoProcessingController.handleCommentLiked); 
 
+router.post('/generate-description', authenticate, videoProcessingController.generateDescription);
+
 // Notification routes
 router.get('/notifications', authenticate, notificationController.fetchNotifications);
 

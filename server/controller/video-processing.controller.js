@@ -14,6 +14,7 @@ const LikeModal = require("../mongo-schema/like.schema");
 const DislikeModal = require("../mongo-schema/dislike.schema");
 const path = require('path');
 const { generatePublicS3Url } = require('../service/s3Helper.service');
+const { generateDescriptionFromTitle } = require('../service/gemini.service');
 
 const handleUpload = async (req, res) => {
     try {
@@ -324,6 +325,18 @@ const handleCommentLiked = async (req, res) => {
     }
 };
 
+const generateDescription = async (req, res) => {
+    try {
+        const { title, query } = req.body;
+        const description = await generateDescriptionFromTitle(title);
+
+        res.status(200).send({ description });
+
+    } catch (error) {
+        console.error('Error sending notification:', error);
+    }
+};
+
 // sendNotification()
 
 
@@ -338,5 +351,6 @@ module.exports = {
     handleVideoMarked,
     handleVideoCommented,
     fetchComments,
-    handleCommentLiked
+    handleCommentLiked,
+    generateDescription
 }

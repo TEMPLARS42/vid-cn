@@ -1,5 +1,5 @@
 const { Worker } = require('bullmq');
-const { convertToAdaptiveStreaming } = require('../service/adaptiveUpload.service');
+const { convertToAdaptiveStreaming, deleteLocalFolder, deleteLocalFile } = require('../service/adaptiveUpload.service');
 const { REDIS_CONNECTION } = require('../confgis/redis-connection.config');
 const { notificationQuene } = require('./quene');
 const UserModal = require("../mongo-schema/user.schema");
@@ -24,8 +24,13 @@ const videoWorker = new Worker('video-processing', async (job) => {
       fileName,
       userId
     });
+
+    // deleting local folder..........
+    deleteLocalFolder(outputPath);
+    deleteLocalFile(file.path.toString());
   } catch (error) {
     console.error('Error during video conversion:', error);
+    await retryVideoWorker(job);
   }
 }, {
   connection: REDIS_CONNECTION
@@ -55,7 +60,6 @@ const notificationWorker = new Worker('send-notification', async (job) => {
 
     // sending push notification to the user....
     const response = await messaging.send(message);
-    console.log(response,"pp")
     // sending email notification to the user....
     const payload = {
       subject: 'Video Uploaded',
@@ -74,6 +78,33 @@ const notificationWorker = new Worker('send-notification', async (job) => {
 }, {
   connection: REDIS_CONNECTION
 });
+
+const retryVideoWorker = async (job) => {
+  const { file, outputPath, userId, s3Path, videoId, fileName } = job.data;
+
+  try {
+    const videoInfo = await VideoModal.findById(String(videoId), { uploadStatus: 1, userId: 1, retries: 1 }).lean();
+
+    if (!videoInfo) return;
+    if (videoInfo.retries > 3) return;
+
+    await VideoModal.updateOne({ _id: new ObjectId(videoId) }, { $set: { uploadStatus: 'PROCESSING' } });
+
+    // adding video to the quene............
+    await videoQuene.add('video-processing', {
+      file: file,
+      outputPath: outputPath,
+      userId,
+      s3Path: s3Path,
+      videoId,
+      fileName: fileName
+    });
+  }
+  catch (error) {
+    console.error('Error during retry video:', error);
+  }
+}
+
 
 module.exports = { videoWorker, notificationWorker };
 

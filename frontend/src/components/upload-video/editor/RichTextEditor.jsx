@@ -2,22 +2,39 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Bold, Italic, List, Smile } from 'lucide-react';
 import EmojiPicker from './emoji-picker/EmojiPicker';
 
-const RichTextEditor = ({ onChange, placeholder }) => {
+const RichTextEditor = ({ onChange, placeholder, value }) => {
   const editorRef = useRef(null);
+  const isProgrammaticallySettingValue = useRef(false); 
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+  // Set the editor's content when the `value` prop changes, but don't trigger `onChange`
+  useEffect(() => {
+    if (editorRef.current && value !== editorRef.current.innerHTML) {
+      isProgrammaticallySettingValue.current = true; // Indicate that this change is programmatic
+      editorRef.current.innerHTML = value;
+      isProgrammaticallySettingValue.current = false; // Reset after setting the value
+    }
+  }, [value]);
+
+  // Handle user input and trigger `onChange` only for actual input
   useEffect(() => {
     const handleInput = () => {
-      if (onChange) {
+      if (!isProgrammaticallySettingValue.current && onChange) {
+        // Only trigger `onChange` if it's a user input
         onChange(editorRef.current.innerHTML);
       }
     };
 
     const editor = editorRef.current;
-    editor.addEventListener('input', handleInput);
+    if (editor) {
+      editor.addEventListener('input', handleInput);
+    }
 
+    // Clean up event listener when the component unmounts
     return () => {
-      editor.removeEventListener('input', handleInput);
+      if (editor) {
+        editor.removeEventListener('input', handleInput);
+      }
     };
   }, [onChange]);
 
