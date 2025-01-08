@@ -43,13 +43,13 @@ const UploadVideo = () => {
         if (file && file.type.startsWith('video/')) {
             handleFileSelection(file);
         } else {
-            setError('Please upload a valid video file');
+            toasty.warn('Please upload a valid video file');
         }
     };
 
     const handleFileSelection = (file) => {
-        if (file.size > 2 * 1024 * 1024 * 1024) { // 2GB
-            setError('File size exceeds 2GB limit');
+        if (file.size > 50 * 1024 * 1024) { // 50MB
+            toasty.warn('File size exceeds 50MB limit');
             return;
         }
         setSelectedFile(file);
