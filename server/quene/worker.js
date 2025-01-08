@@ -17,7 +17,7 @@ const videoWorker = new Worker('video-processing', async (job) => {
     await convertToAdaptiveStreaming(file, outputPath, s3Path);
     console.log(`Video conversion for user ${userId} is completed.`);
 
-    VideoModal.updateOne({ _id: new ObjectId(videoId) }, { $set: { uploadStatus: 'COMPLETED' } });
+    await VideoModal.updateOne({ _id: new ObjectId(videoId) }, { $set: { uploadStatus: 'COMPLETED' } });
 
     // adding notification to the quene............
     await notificationQuene.add('send-notification', {
@@ -30,6 +30,7 @@ const videoWorker = new Worker('video-processing', async (job) => {
     deleteLocalFile(file.path.toString());
   } catch (error) {
     console.error('Error during video conversion:', error);
+    await VideoModal.updateOne({ _id: new ObjectId(videoId) }, { $set: { uploadStatus: 'PROCESSING' } });
     await retryVideoWorker(job);
   }
 }, {

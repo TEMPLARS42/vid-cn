@@ -83,6 +83,7 @@ const UploadVideo = () => {
             if (currentIndex >= fullText.length) {
                 clearInterval(typingIntervalRef.current);
                 typingIntervalRef.current = null;
+                setIsGenerating(false);
             }
         }, typingSpeed);
     };
