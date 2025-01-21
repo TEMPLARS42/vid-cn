@@ -11,6 +11,7 @@ const { PORT } = process.env;
 require('./quene/worker.js');
 
 const app = express();
+app.enable('trust proxy');
 app.use(cors({
     origin: ["http://localhost:3000"]
 }));
