@@ -5,6 +5,7 @@ const { log } = require('../utils/logger.util');
 const JWT = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = process.env;
 const rateLimit = require('express-rate-limit');
+const { options } = require('../routes');
 
 const authenticate = async (req, res, next) => {
     try {
@@ -83,12 +84,16 @@ const removeLoginTokens = async (accessToken) => {
     await LoginTokenModal.deleteOne({ accessToken: accessToken })
 }
 
+const getClientIP = (req) => {
+    return req.connection.remoteAddress; // Directly retrieve IP from the connection
+};
+
 const signUpLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // Limit each IP to 5 requests per windowMs
     message: 'Too many signup attempts from this IP, please try again later',
-  });
-
+    keyGenerator: (req) => getClientIP(req), // Custom function to bypass X-Forwarded-For header
+});
 module.exports = {
     authenticate,
     signUpLimiter
