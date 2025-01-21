@@ -12,6 +12,7 @@ const { JWT_SECRET_KEY, CLIENT_BASE_URL } = process.env;
 const handleSignUp = async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        if (!name || !email || !password) return res.status(401).send({ message: 'Invalid request.' });
         // encrypting passowrd..........
         const isUserExists = await UserModal.exists({ email });
         if (isUserExists) return res.status(401).send({ message: 'User already exists.' });

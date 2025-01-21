@@ -4,6 +4,7 @@ const { generateRandomString } = require('../utils/crypto.util');
 const { log } = require('../utils/logger.util');
 const JWT = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = process.env;
+const rateLimit = require('express-rate-limit');
 
 const authenticate = async (req, res, next) => {
     try {
@@ -62,7 +63,7 @@ const authenticate = async (req, res, next) => {
                 res.clearCookie('refresh_token', { path: '/' });
                 return res.status(401).send({ status: "TERMINATE" })
             }
-            
+
             req['user'] = user;
             req['userId'] = user._id.toString();
             req['loginTokenId'] = loginTokenInfo._id;
@@ -82,7 +83,13 @@ const removeLoginTokens = async (accessToken) => {
     await LoginTokenModal.deleteOne({ accessToken: accessToken })
 }
 
+const signUpLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 requests per windowMs
+    message: 'Too many signup attempts from this IP, please try again later',
+  });
 
 module.exports = {
     authenticate,
-};  
+    signUpLimiter
+};
