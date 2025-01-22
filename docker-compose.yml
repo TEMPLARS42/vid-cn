@@ -1,0 +1,26 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: ./frontend   # Path to your frontend Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"              # Expose frontend on port 80
+    depends_on:
+      - backend               # Ensure frontend starts after backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./server      # Path to your backend Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"           # Expose backend on port 5000
+    networks:
+      - app-network
+
+# Define a shared network for the frontend and backend to communicate
+networks:
+  app-network:
+    driver: bridge
