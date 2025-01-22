@@ -5,7 +5,7 @@ const CommentModal = require('../mongo-schema/comment.schema');
 const CommentLikeModal = require('../mongo-schema/comment-like.schema');
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
-const { videoQueue } = require('../quene/quene');
+// const { videoQueue } = require('../quene/quene');
 const { generateRandomString } = require("../utils/crypto.util");
 const { captureThumbnail, deleteLocalFile } = require('../service/adaptiveUpload.service');
 const { createFile } = require('../service/appwrite.service');
@@ -44,14 +44,14 @@ const handleUpload = async (req, res) => {
             });
 
         // Add job to BullMQ queue
-        await videoQueue.add('video-processing', {
-            file: req.files[0],
-            outputPath,
-            s3Path,
-            fileName: fileNameWithoutExt,
-            videoId: videoInfo._id,
-            userId
-        });
+        // await videoQueue.add('video-processing', {
+        //     file: req.files[0],
+        //     outputPath,
+        //     s3Path,
+        //     fileName: fileNameWithoutExt,
+        //     videoId: videoInfo._id,
+        //     userId
+        // });
 
         // Respond immediately, job will be processed in background
         res.status(200).send({ message: 'Video is being processed. You will be notified once completed.' });

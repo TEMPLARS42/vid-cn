@@ -8,7 +8,7 @@ const { PORT } = process.env;
 // const { graphqlHTTP } = require('express-graphql');
 // const userSchema = require('./graph-ql-schema/user-graphql.schemas');
 // const userResolver = require('./graphql-resolvers/user-resolver');
-require('./quene/worker.js');
+// require('./quene/worker.js');
 
 const app = express();
 app.use(cors({

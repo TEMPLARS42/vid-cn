@@ -123,6 +123,7 @@ export const VideoPlayer = () => {
             const info = response.data.videoInfo;
             setVideoInfo({
                 ...info,
+                path: "http://localhost:8080/hls/12346.m3u8"
                 // path: "https://vid-cn.s3.ap-south-1.amazonaws.com/uploads/videos/6744cdb27abf86d90d83acb3/62d4f137ddc5e8e6d22a222749dbb0fh/master.m3u8"
             });
             setIsLiked(info.isLiked);
